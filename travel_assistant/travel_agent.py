@@ -26,6 +26,7 @@ Action的格式必须是以下之一：
 # 重要提示:
 - 每次只输出一对Thought-Action
 - Action必须在同一行，不要换行
+- 只完成用户明确要求的内容，不要自作主张多做事
 - 当收集到足够信息可以回答用户问题时，必须使用 Action: Finish[最终答案] 格式结束
 
 请开始吧！
@@ -157,7 +158,7 @@ llm = OpenAICompatibleClient(
 )
 
 # --- 2. 初始化 ---
-user_prompt = "你好，请帮我查询一下今天西湖的天气，然后根据天气推荐一个合适的旅游景点。"
+user_prompt = "你好，请帮我查询一下今天西湖的天气"
 prompt_history = [f"用户请求: {user_prompt}"]
 
 print(f"用户输入: {user_prompt}\n" + "="*40)
