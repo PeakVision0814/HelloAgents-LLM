@@ -106,9 +106,12 @@ LLM_TIMEOUT=60
 
 ### `4_Agent_Classical_Paradigm_Construction/tools.py`
 
-定义工具执行器 `ToolExecutor` 和基于 SerpApi 的搜索工具 `search`。
+定义工具执行器 `ToolExecutor` 以及两个可供 Agent 调用的工具：
 
-需要的环境变量：
+- **`calculate`** — 安全数学计算器，支持 `+ - * / ** % //` 及常用数学函数（`sqrt`, `sin`, `cos`, `log` 等），自动将中文符号（× ÷）转为标准运算符。使用受限执行环境（沙箱），无需外部 API Key。
+- **`search`** — 基于 SerpApi 的网页搜索引擎，智能解析答案框、知识图谱和有机搜索结果。
+
+需要的环境变量（仅 `search` 工具需要）：
 
 ```env
 SERPAPI_API_KEY=your-serpapi-key
@@ -186,15 +189,17 @@ TAVILY_API_KEY=your-tavily-key
 
 ## 学习路线
 
-推荐按下面顺序阅读和运行：
+推荐按下面顺序阅读和运行（由浅入深，先无外部依赖后有外部依赖）：
 
-1. `2_History_of_Agents/ELIZA.py`：理解早期规则式 Agent。
-2. `tokenizer.py`：理解 BPE tokenizer 的基本训练过程。
-3. `3_Fundamentals_of_LLMs/ch3_local_model.py`：理解本地 LLM 的输入构造和生成。
-4. `1_Introduction_to_Agents/travel_agent.py`：理解工具调用式 Agent 的基本循环。
+1. `2_History_of_Agents/ELIZA.py`：理解早期规则式 Agent。纯本地运行，无需任何 API Key 或 GPU。
+2. `tokenizer.py`：理解 BPE tokenizer 的基本训练过程。纯本地运行。
+3. `3_Fundamentals_of_LLMs/ch3_local_model.py`：理解本地 LLM 的输入构造和生成。需要下载模型但无需 API Key。
+4. `1_Introduction_to_Agents/travel_agent.py`：理解工具调用式 Agent 的基本循环。需要配置 LLM API 和 Tavily API Key。
 5. `4_Agent_Classical_Paradigm_Construction/ReAct.py`：学习 ReAct 推理与行动闭环。
 6. `4_Agent_Classical_Paradigm_Construction/Plan_and_solve.py`：学习计划拆解和逐步执行。
 7. `4_Agent_Classical_Paradigm_Construction/Reflection.py`：学习基于反馈的自我改进。
+
+> 第1章虽名为"Introduction"，但因涉及 LLM API 和搜索引擎 API 的双重配置，建议在熟悉本地示例后再回头学习。第4章的三个 Agent 共享 `llm_client.py` 和 `tools.py` 作为公共基础设施，阅读时建议先理解这两个模块。
 
 ## 注意事项
 
