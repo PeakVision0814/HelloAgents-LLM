@@ -224,3 +224,7 @@ TAVILY_API_KEY=your-tavily-key
 - 在线搜索和 LLM 调用示例会产生 API 调用成本，请确认配置后再运行。
 - 示例代码偏教学用途，主要用于展示 Agent 思路；在生产环境使用前需要补充异常处理、密钥管理、日志和测试。
 - 若运行 `4_Agent_Classical_Paradigm_Construction` 下的脚本，请先进入该目录，保证本地模块导入路径正确。
+
+## 致谢
+
+本项目是个人学习练习仓库，代码和内容源自 [Datawhale Hello-Agents](https://github.com/datawhalechina/hello-agents) 开源教程。感谢 Datawhale 社区的无私贡献。
