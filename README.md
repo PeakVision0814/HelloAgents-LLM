@@ -13,12 +13,16 @@ agent_study/
 │   └── ELIZA.py
 ├── 3_Fundamentals_of_LLMs/
 │   └── ch3_local_model.py
-└── 4_Agent_Classical_Paradigm_Construction/
-    ├── llm_client.py
-    ├── tools.py
-    ├── ReAct.py
-    ├── Plan_and_solve.py
-    └── Reflection.py
+├── 4_Agent_Classical_Paradigm_Construction/
+│   ├── llm_client.py
+│   ├── tools.py
+│   ├── ReAct.py
+│   ├── Plan_and_solve.py
+│   └── Reflection.py
+└── 5_Building_Agents_with_Low_Code_Platforms/
+    ├── Chatflow-AI_news-draft-9211.zip
+    ├── HelloAgent_n8nCase.json
+    └── 超级智能个人助手.yml
 ```
 
 ## 示例说明
@@ -150,6 +154,18 @@ cd 4_Agent_Classical_Paradigm_Construction
 python Reflection.py
 ```
 
+### `5_Building_Agents_with_Low_Code_Platforms/`
+
+使用 Dify 和 n8n 等低代码平台搭建 Agent 工作流，无需手写 Agent Loop。
+
+| 文件 | 平台 | 用途 |
+|------|------|------|
+| `Chatflow-AI_news-draft-9211.zip` | Dify | AI 新闻稿生成 Chatflow |
+| `超级智能个人助手.yml` | Dify | 多功能个人助手 DSL 工作流 |
+| `HelloAgent_n8nCase.json` | n8n | Gmail 触发 + AI 自动化工作流 |
+
+使用方式：在对应平台的 Studio 中选择 **Import** 上传文件，配置凭据后即可运行。
+
 ## 环境准备
 
 建议使用 Python 3.10 或更高版本，并创建虚拟环境：
@@ -198,6 +214,7 @@ TAVILY_API_KEY=your-tavily-key
 5. `4_Agent_Classical_Paradigm_Construction/ReAct.py`：学习 ReAct 推理与行动闭环。
 6. `4_Agent_Classical_Paradigm_Construction/Plan_and_solve.py`：学习计划拆解和逐步执行。
 7. `4_Agent_Classical_Paradigm_Construction/Reflection.py`：学习基于反馈的自我改进。
+8. `5_Building_Agents_with_Low_Code_Platforms/`：了解如何使用 Dify、n8n 等低代码平台快速搭建 Agent。
 
 > 第1章虽名为"Introduction"，但因涉及 LLM API 和搜索引擎 API 的双重配置，建议在熟悉本地示例后再回头学习。第4章的三个 Agent 共享 `llm_client.py` 和 `tools.py` 作为公共基础设施，阅读时建议先理解这两个模块。
 
