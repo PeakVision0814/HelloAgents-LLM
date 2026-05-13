@@ -3,10 +3,39 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import math
+import re as re_module
 from serpapi import SerpApiClient
 # from tavily import TavilyClient
 
 from typing import Dict, Any
+
+def calculate(expression: str) -> str:
+    """
+    一个安全的数学计算器工具，支持 + - * / ** % // 及常用数学函数。
+    自动将中文符号（× ÷）转为标准运算符。
+    """
+    print(f"🧮 正在执行 [Calculator] 计算: {expression}")
+    try:
+        # 标准化：中文符号 → Python 运算符
+        normalized = expression.replace("×", "*").replace("÷", "/").replace("^", "**")
+        # 安全沙箱：只暴露数学函数，屏蔽所有内置函数和变量
+        safe_names = {
+            "__builtins__": {},
+            "abs": abs, "round": round, "max": max, "min": min, "sum": sum,
+            "int": int, "float": float,
+            "pow": pow, "sqrt": math.sqrt,
+            "sin": math.sin, "cos": math.cos, "tan": math.tan,
+            "log": math.log, "log10": math.log10, "log2": math.log2,
+            "pi": math.pi, "e": math.e,
+        }
+        result = eval(normalized, safe_names)
+        return f"计算结果: {result}"
+    except ZeroDivisionError:
+        return "错误：除数不能为零。"
+    except Exception as e:
+        return f"计算错误: {e}"
+
 
 def search(query: str) -> str:
     """
