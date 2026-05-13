@@ -1,4 +1,5 @@
 import os
+import re
 from openai import OpenAI
 from dotenv import load_dotenv
 from typing import List, Dict
@@ -24,6 +25,10 @@ class HelloAgentsLLM:
             raise ValueError("模型ID、API密钥和服务地址必须被提供或在.env文件中定义。")
 
         self.client = OpenAI(api_key=apiKey, base_url=baseUrl, timeout=timeout)
+    def _strip_thinking(self, text: str) -> str:
+            """移除 <think>...</think> 推理块"""
+            return re.sub(r'<think>.*?</think>\s*', '', text, flags=re.DOTALL)
+    
 
     def think(self, messages: List[Dict[str, str]], temperature: float = 0) -> str:
         """
@@ -48,7 +53,8 @@ class HelloAgentsLLM:
                 print(content, end="", flush=True)
                 collected_content.append(content)
             print()  # 在流式输出结束后换行
-            return "".join(collected_content)
+            # return "".join(collected_content)
+            return self._strip_thinking("".join(collected_content))
 
         except Exception as e:
             print(f"❌ 调用LLM API时发生错误: {e}")
