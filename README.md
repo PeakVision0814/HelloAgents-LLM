@@ -21,8 +21,8 @@
 python -m venv .venv
 .venv\Scripts\activate
 
-# 按需安装（ELIZA 无需任何安装）
-pip install openai python-dotenv requests google-search-results torch modelscope
+# 全部依赖（ELIZA 无需安装）
+pip install -r requirements.txt
 ```
 
 需要 LLM API 的章节，在对应目录下创建 `.env`：
