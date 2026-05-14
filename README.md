@@ -25,7 +25,7 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-需要 LLM API 的章节，在对应目录下创建 `.env`：
+需要 LLM API 的章节，建议统一在项目根目录创建 `.env`：
 
 ```env
 LLM_MODEL_ID=your-model-id
@@ -35,6 +35,10 @@ LLM_TIMEOUT=60
 SERPAPI_API_KEY=your-serpapi-key
 TAVILY_API_KEY=your-tavily-key
 ```
+
+第 1 章现在也会直接从根目录 `.env` 读取 `LLM_MODEL_ID`、`LLM_API_KEY`、`LLM_BASE_URL` 和 `TAVILY_API_KEY`，不再需要把凭据写在源码里。
+
+项目中的 LLM 配置统一由根目录 [llm_clients.py](llm_clients.py) 管理。教学案例需要 OpenAI 兼容客户端、LangChain `ChatOpenAI` 或 AutoGen `OpenAIChatCompletionClient` 时，都应优先复用这个文件里的函数或类。
 
 ## 学习路线
 

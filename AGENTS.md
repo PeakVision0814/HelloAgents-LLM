@@ -10,6 +10,8 @@
 
 ## 仓库结构
 
+- `llm_clients.py`
+  - 全项目统一 LLM 配置入口，负责读取根目录 `.env` 并创建 OpenAI 兼容、LangChain、AutoGen 客户端。
 - `1_Introduction_to_Agents/`
   - `travel_agent.py`：旅行助手 Agent，演示 Thought -> Action -> Observation 循环。
   - 依赖联网、LLM API 与 Tavily。
@@ -47,7 +49,8 @@ pip install -r requirements.txt
 
 ## 已知注意点
 
-- `1_Introduction_to_Agents/travel_agent.py` 当前把演示用模型参数和 Tavily Key 直接写在源码里；如果改动该文件，优先改成读取本地环境变量，不要新增或保留真实密钥。
+- `1_Introduction_to_Agents/travel_agent.py` 现在显式读取仓库根目录 `.env`；如果改动该文件，继续保持与项目根环境变量一致，不要把真实密钥写回源码。
+- `4_Agent_Classical_Paradigm_Construction/llm_client.py` 是兼容入口，真实 LLM 客户端实现在根目录 `llm_clients.py`；修改客户端配置时优先改根目录文件。
 - `4_Agent_Classical_Paradigm_Construction/` 里的脚本依赖同目录下的 `llm_client.py` 与 `tools.py`，修改时注意不要破坏这些共享接口。
 - `6_Framework_Development_Practice/AutoGenDemo/AutoGenDemo.py` 当前工作区中可能已有用户未提交改动；修改前先读清楚，不要覆盖用户调整。
 - 根 `README.md` 是仓库总入口；如果新增章节、调整依赖或改变运行方式，应同步更新根 README。

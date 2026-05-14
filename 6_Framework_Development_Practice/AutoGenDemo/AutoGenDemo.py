@@ -1,19 +1,19 @@
 """
 AutoGen 软件开发团队协作案例
 """
-import os
 import sys
 import asyncio
 from pathlib import Path
-from dotenv import load_dotenv
-from autogen_ext.models.openai import OpenAIChatCompletionClient
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_agentchat.conditions import TextMentionTermination
 from autogen_agentchat.ui import Console
 
-ENV_PATH = Path(__file__).resolve().parents[2] / ".env"
-load_dotenv(ENV_PATH, override=True)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from llm_clients import create_autogen_openai_client
 
 try:
     sys.stdout.reconfigure(encoding="utf-8")
@@ -27,22 +27,7 @@ async def auto_user_input(prompt: str, cancellation_token=None) -> str:
 
 def create_openai_model_client():
     """创建并配置 OpenAI 模型客户端"""
-    api_key = os.getenv("LLM_API_KEY") or os.getenv("OPENAI_API_KEY")
-    if not api_key:
-        raise ValueError(f"未读取到 API Key，请检查 {ENV_PATH}")
-
-    return OpenAIChatCompletionClient(
-        model=os.getenv("LLM_MODEL_ID", "Qwen3-14B-AWQ"),
-        api_key=api_key,
-        base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
-        model_info={
-            "vision": False,
-            "function_calling": False,
-            "json_output": False,
-            "structured_output": False,
-            "family": "unknown",
-        },
-    )
+    return create_autogen_openai_client()
 
 def create_product_manager(model_client):
     """创建产品经理智能体"""

@@ -15,11 +15,11 @@
 # 安装依赖
 pip install openai requests tavily-python
 
-# 配置环境变量
-export TAVILY_API_KEY=your-key
-export LLM_API_KEY=your-key
-export LLM_BASE_URL=https://your-api-endpoint
-export LLM_MODEL_ID=your-model
+# 在项目根目录配置 .env（也可使用系统环境变量）
+# TAVILY_API_KEY=your-key
+# LLM_API_KEY=your-key
+# LLM_BASE_URL=https://your-api-endpoint
+# LLM_MODEL_ID=your-model
 
 # 运行
 python travel_agent.py

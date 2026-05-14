@@ -1,18 +1,20 @@
 import asyncio
 import os
 from datetime import datetime
+from pathlib import Path
+import sys
 from typing import Annotated, TypedDict
 
-from dotenv import load_dotenv
 from langchain_core.messages import AIMessage
-from langchain_openai import ChatOpenAI
 from langgraph.graph import END, START, StateGraph
 from langgraph.graph.message import add_messages
 from tavily import TavilyClient
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
-# 加载 .env 文件中的环境变量
-load_dotenv()
+from llm_clients import create_chat_openai
 
 
 class SearchState(TypedDict):
@@ -26,13 +28,7 @@ class SearchState(TypedDict):
 
 
 # 初始化模型和 Tavily 客户端
-llm = ChatOpenAI(
-    model=os.getenv("LLM_MODEL_ID", "gpt-4o-mini"),
-    api_key=os.getenv("LLM_API_KEY"),
-    base_url=os.getenv("LLM_BASE_URL", "https://api.openai.com/v1"),
-    temperature=0.7,
-)
-
+llm = create_chat_openai(temperature=0.7)
 tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 TODAY_STR = datetime.now().strftime("%Y-%m-%d")
 

@@ -1,8 +1,16 @@
 import os
 import re
+from pathlib import Path
+import sys
+
 import requests
 from tavily import TavilyClient
-from openai import OpenAI
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from llm_clients import HelloAgentsLLM
 
 
 # ------------------- System Prompt -------------
@@ -110,52 +118,10 @@ available_tools = {
     "get_attraction": get_attraction,
 }
 
-# ---------------------  LLM 客户端类 ---------------
-class OpenAICompatibleClient:
-    """
-    一个用于调用任何兼容OpenAI接口的LLM服务的客户端。
-    """
-    def __init__(self, model: str, api_key: str, base_url: str):
-        self.model = model
-        self.client = OpenAI(api_key=api_key, base_url=base_url)
-
-    def generate(self, prompt: str, system_prompt: str) -> str:
-        """调用LLM API来生成回应。"""
-        print("正在调用大语言模型...")
-        try:
-            messages = [
-                {'role': 'system', 'content': system_prompt},
-                {'role': 'user', 'content': prompt}
-            ]
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=messages,
-                stream=False
-            )
-            answer = response.choices[0].message.content
-            print("大语言模型响应成功。")
-            return answer
-        except Exception as e:
-            print(f"调用LLM API时发生错误: {e}")
-            return "错误:调用语言模型服务时出错。"
-        
-
-
 # ------------ 配置主循环 ----------------
 
 # --- 1. 配置LLM客户端 ---
-# 请根据您使用的服务，将这里替换成对应的凭证和地址
-API_KEY = "sk-8c21132c666b4edc908a60133fa1ff5d"
-BASE_URL = "https://dashscope.aliyuncs.com/compatible-mode/v1"
-MODEL_ID = "qwen-flash"
-TAVILY_API_KEY="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"
-os.environ['TAVILY_API_KEY'] = TAVILY_API_KEY
-
-llm = OpenAICompatibleClient(
-    model=MODEL_ID,
-    api_key=API_KEY,
-    base_url=BASE_URL
-)
+llm = HelloAgentsLLM()
 
 # --- 2. 初始化 ---
 user_prompt = "你好，请帮我查询一下今天西湖的天气"
