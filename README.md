@@ -40,6 +40,75 @@ TAVILY_API_KEY=your-tavily-key
 
 项目中的 LLM 配置统一由根目录 [llm_clients.py](llm_clients.py) 管理。教学案例需要 OpenAI 兼容客户端、LangChain `ChatOpenAI` 或 AutoGen `OpenAIChatCompletionClient` 时，都应优先复用这个文件里的函数或类。
 
+## 统一 LLM 客户端用法
+
+[llm_clients.py](llm_clients.py) 会自动读取项目根目录 `.env`，并把常用的 LLM 客户端创建方式集中到一处。新增教学案例时，优先复用这里的入口，避免在每个章节里重复写 `load_dotenv()`、`os.getenv()` 和客户端初始化逻辑。
+
+### 普通 OpenAI 兼容接口
+
+适合第 1 章、第 4 章这类直接调用 Chat Completions 的示例。
+
+```python
+from llm_clients import HelloAgentsLLM
+
+llm = HelloAgentsLLM()
+
+answer = llm.generate(
+    prompt="你好，请介绍一下 AI Agent。",
+    system_prompt="你是一个有帮助的教学助手。",
+)
+print(answer)
+```
+
+如果需要流式输出，使用 `think()`：
+
+```python
+from llm_clients import HelloAgentsLLM
+
+llm = HelloAgentsLLM()
+response = llm.think([
+    {"role": "system", "content": "你是一个 Python 教学助手。"},
+    {"role": "user", "content": "写一个快速排序算法。"},
+])
+```
+
+### LangChain / LangGraph
+
+适合第 6 章 LangGraph 示例，返回的是 `langchain_openai.ChatOpenAI` 实例。
+
+```python
+from llm_clients import create_chat_openai
+
+llm = create_chat_openai(temperature=0.7)
+response = llm.invoke("用一句话解释 ReAct Agent。")
+print(response.content)
+```
+
+### AutoGen
+
+适合 AutoGen 示例，返回的是 `autogen_ext.models.openai.OpenAIChatCompletionClient` 实例。
+
+```python
+from llm_clients import create_autogen_openai_client
+
+model_client = create_autogen_openai_client()
+```
+
+### 在子目录脚本中导入
+
+如果脚本位于章节子目录，直接运行时 Python 可能找不到根目录模块。可以在脚本开头加入项目根目录到 `sys.path`：
+
+```python
+from pathlib import Path
+import sys
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]  # 按脚本所在层级调整 parents
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from llm_clients import HelloAgentsLLM
+```
+
 ## 学习路线
 
 推荐由浅入深，先无外部依赖后有外部依赖：
