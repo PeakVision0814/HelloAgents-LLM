@@ -84,6 +84,8 @@ response = llm.invoke("用一句话解释 ReAct Agent。")
 print(response.content)
 ```
 
+`6_Framework_Development_Practice/Langgraph/Dialogue_System.py` 这个示例现在会在真实搜索前先做一次敏感词检查；命中后会直接拒答并终止流程，未命中才继续搜索。
+
 ### AutoGen
 
 适合 AutoGen 示例，返回的是 `autogen_ext.models.openai.OpenAIChatCompletionClient` 实例。

@@ -1,11 +1,12 @@
 from langgraph.graph import END, START, StateGraph
 import asyncio
 
-from edges import route_after_quality_check
+from edges import route_after_quality_check, route_after_sensitive_check
 from nodes import (
     answer_node,
     quality_check_node,
     search_node,
+    sensitive_check_node,
     understand_and_query_node,
 )
 from state import SearchState
@@ -16,13 +17,22 @@ workflow = StateGraph(SearchState)
 
 # 添加节点
 workflow.add_node("understand_and_query", understand_and_query_node)
+workflow.add_node("sensitive_check", sensitive_check_node)
 workflow.add_node("search", search_node)
 workflow.add_node("answer", answer_node)
 workflow.add_node("quality_check", quality_check_node)
 
 # 添加边
 workflow.add_edge(START, "understand_and_query")
-workflow.add_edge("understand_and_query", "search")
+workflow.add_edge("understand_and_query", "sensitive_check")
+workflow.add_conditional_edges(
+    "sensitive_check",
+    route_after_sensitive_check,
+    {
+        "continue": "search",
+        "reject": END,
+    },
+)
 workflow.add_edge("search", "answer")
 workflow.add_edge("answer", "quality_check")
 workflow.add_conditional_edges(
@@ -46,6 +56,8 @@ async def run_single_query(user_query: str) -> None:
         "search_query": "",
         "search_results": "",
         "final_answer": "",
+        "is_sensitive": False,
+        "refusal_reason": "",
         "step": "",
         "retry_count": 0,
     }
@@ -58,6 +70,14 @@ async def run_single_query(user_query: str) -> None:
             print("🧠 理解阶段")
             print(f"原始问题：{user_query}")
             print(f"优化查询：{node_state['search_query']}\n")
+        elif "sensitive_check" in event:
+            node_state = event["sensitive_check"]
+            print("🛡️ 敏感词检查")
+            print(f"检查结果：{node_state['step']}")
+            if node_state["is_sensitive"]:
+                print(f"拒答说明：{node_state['refusal_reason']}\n")
+            else:
+                print("未命中敏感词，继续搜索。\n")
         elif "search" in event:
             node_state = event["search"]
             print("🔍 搜索阶段")

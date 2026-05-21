@@ -20,6 +20,18 @@ from llm_clients import create_chat_openai
 llm = create_chat_openai(temperature=0.7)
 tavily_client = TavilyClient(api_key=os.getenv("TAVILY_API_KEY"))
 TODAY_STR = datetime.now().strftime("%Y-%m-%d")
+SENSITIVE_KEYWORDS = [
+    "炸弹",
+    "爆炸物",
+    "制毒",
+    "毒品制作",
+    "枪支改装",
+    "杀人",
+    "自杀教程",
+    "木马病毒",
+    "勒索病毒",
+    "破解银行卡",
+]
 
 
 def truncate_text(text: str, max_length: int = 300) -> str:
@@ -88,6 +100,42 @@ Search Query: <适合搜索的关键词或短句>
         "step": "understand_and_query",
         "messages": [
             AIMessage(content=f"意图理解：{intent}\n搜索查询：{search_query}")
+        ],
+    }
+
+
+async def sensitive_check_node(state: SearchState) -> dict:
+    """在真实搜索前检查用户问题中是否包含敏感词。"""
+    matched_keywords = [
+        keyword for keyword in SENSITIVE_KEYWORDS if keyword in state["user_query"]
+    ]
+
+    if matched_keywords:
+        refusal_reason = (
+            "检测到问题包含敏感词，当前示例不提供相关内容的搜索和回答。"
+        )
+        matched_text = "、".join(matched_keywords)
+        return {
+            "is_sensitive": True,
+            "refusal_reason": refusal_reason,
+            "final_answer": refusal_reason,
+            "step": "sensitive_rejected",
+            "messages": [
+                AIMessage(
+                    content=(
+                        f"敏感词检查未通过，命中关键词：{matched_text}。\n"
+                        f"拒答原因：{refusal_reason}"
+                    )
+                )
+            ],
+        }
+
+    return {
+        "is_sensitive": False,
+        "refusal_reason": "",
+        "step": "sensitive_pass",
+        "messages": [
+            AIMessage(content="敏感词检查通过，继续执行搜索。")
         ],
     }
 

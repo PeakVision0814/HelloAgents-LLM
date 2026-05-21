@@ -9,5 +9,7 @@ class SearchState(TypedDict):
     search_query: str    # 优化后用于 Tavily API 的搜索查询
     search_results: str  # Tavily 搜索返回的精简结果
     final_answer: str    # 最终生成的答案
+    is_sensitive: bool   # 是否命中敏感词
+    refusal_reason: str  # 命中敏感词后的拒答原因
     step: str            # 标记当前步骤
     retry_count: int     # 搜索重试计数器，防止循环失控
