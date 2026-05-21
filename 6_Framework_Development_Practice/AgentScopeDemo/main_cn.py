@@ -4,14 +4,15 @@
 融合三国演义角色和传统狼人杀玩法
 """
 import asyncio
-import os
 import random
-from typing import List, Dict, Optional
+import sys
+from pathlib import Path
+from typing import List, Dict
 
 from agentscope.agent import ReActAgent
-from agentscope.model import DashScopeChatModel
+from agentscope.model import OpenAIChatModel
 from agentscope.pipeline import MsgHub, sequential_pipeline, fanout_pipeline
-from agentscope.formatter import DashScopeMultiAgentFormatter
+from agentscope.formatter import OpenAIMultiAgentFormatter
 
 from prompt_cn import ChinesePrompts
 from game_roles import GameRoles
@@ -33,6 +34,12 @@ from utils_cn import (
     MAX_DISCUSSION_ROUND,
 )
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from llm_clients import get_llm_config, load_project_env
+
 
 class ThreeKingdomsWerewolfGame:
     """三国狼人杀游戏主类"""
@@ -51,6 +58,18 @@ class ThreeKingdomsWerewolfGame:
         # 女巫道具状态
         self.witch_has_antidote = True
         self.witch_has_poison = True
+
+        # 统一复用仓库根目录 llm_clients.py 中的 OpenAI 兼容配置
+        load_project_env()
+        self.llm_config = get_llm_config(default_model="gpt-4o-mini")
+
+    def _build_model(self) -> OpenAIChatModel:
+        """基于项目统一配置创建 AgentScope 模型实例。"""
+        return OpenAIChatModel(
+            model_name=self.llm_config.model,
+            api_key=self.llm_config.api_key,
+            client_kwargs={"base_url": self.llm_config.base_url},
+        )
         
     async def create_player(self, role: str, character: str) -> ReActAgent:
         """创建具有三国背景的玩家"""
@@ -60,12 +79,8 @@ class ThreeKingdomsWerewolfGame:
         agent = ReActAgent(
             name=name,
             sys_prompt=ChinesePrompts.get_role_prompt(role, character),
-            model=DashScopeChatModel(
-                model_name="qwen-max",
-                api_key=os.environ["DASHSCOPE_API_KEY"],
-                enable_thinking=True,
-            ),
-            formatter=DashScopeMultiAgentFormatter(),
+            model=self._build_model(),
+            formatter=OpenAIMultiAgentFormatter(),
         )
         
         # 角色身份确认
@@ -367,13 +382,17 @@ class ThreeKingdomsWerewolfGame:
 
 async def main():
     """主函数"""
-    # 检查环境变量
-    if "DASHSCOPE_API_KEY" not in os.environ:
-        print("❌ 请设置环境变量 DASHSCOPE_API_KEY")
+    try:
+        load_project_env()
+        config = get_llm_config(default_model="gpt-4o-mini")
+    except ValueError as error:
+        print(f"❌ 模型配置读取失败：{error}")
         return
-    
+
     print("🎮 欢迎来到三国狼人杀！")
-    
+    print(f"🤖 当前使用模型：{config.model}")
+    print(f"🌐 当前接口地址：{config.base_url}")
+
     # 创建并运行游戏
     game = ThreeKingdomsWerewolfGame()
     await game.run_game()

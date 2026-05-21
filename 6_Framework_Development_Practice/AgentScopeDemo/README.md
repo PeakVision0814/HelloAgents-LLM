@@ -25,26 +25,24 @@
 
 ```bash
 pip install agentscope
-pip install dashscope
+pip install openai python-dotenv
 pip install pydantic
 ```
 
 ### 2. 配置环境变量
 
-设置阿里云 DashScope API Key：
+本案例不再直接读取 `DASHSCOPE_API_KEY`，而是复用仓库根目录 `llm_clients.py` 的统一配置。
+
+请先在项目根目录 `.env` 中配置：
 
 ```bash
-# Linux/Mac
-export DASHSCOPE_API_KEY="your-api-key-here"
-
-# Windows PowerShell
-$env:DASHSCOPE_API_KEY="your-api-key-here"
-
-# Windows CMD
-set DASHSCOPE_API_KEY=your-api-key-here
+LLM_MODEL_ID=your-model-id
+LLM_API_KEY=your-api-key
+LLM_BASE_URL=https://your-api-endpoint
+LLM_TIMEOUT=60
 ```
 
-获取 API Key：https://dashscope.console.aliyun.com/apiKey
+脚本启动时会自动读取项目根目录 `.env`，因此运行前不需要再单独设置 `DASHSCOPE_API_KEY`。
 
 ### 3. 运行游戏
 
@@ -163,7 +161,8 @@ def get_role_prompt(role: str, character: str) -> str:
 
 ### Q: 游戏无法启动？
 A: 检查以下几点：
-- 确认 DASHSCOPE_API_KEY 环境变量已设置
+- 确认项目根目录 `.env` 已配置 `LLM_API_KEY`
+- 确认 `LLM_MODEL_ID` 与 `LLM_BASE_URL` 可用
 - 验证 API Key 是否有效
 - 检查网络连接是否正常
 
