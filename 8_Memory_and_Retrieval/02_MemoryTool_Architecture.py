@@ -20,7 +20,8 @@ class MemoryToolArchitectureDemo:
     """MemoryTool架构演示类"""
     
     def __init__(self):
-        self.memory_config = MemoryConfig()
+        # 配置数据库路径到当前脚本所在目录的 memory_data 文件夹
+        self.memory_config = MemoryConfig(storage_path=str(MEMORY_DATA_DIR))
         self.memory_types = ["working", "episodic", "semantic", "perceptual"]
     
     def demonstrate_memory_tool_init(self):
@@ -183,7 +184,7 @@ class MemoryToolArchitectureDemo:
         print("• 模块化的组件设计")
         
         # 演示自定义配置
-        custom_config = MemoryConfig()
+        custom_config = MemoryConfig(storage_path=str(MEMORY_DATA_DIR / "memory_data_custom"))
         custom_config.working_memory_capacity = 100
         custom_config.working_memory_ttl_minutes = 120
         
