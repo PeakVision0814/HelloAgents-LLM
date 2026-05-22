@@ -1,6 +1,6 @@
 # my_simple_agent.py
 from typing import Optional, Iterator
-from hello_agents import SimpleAgent, HelloAgentsLLM, Config, Message
+from hello_agents import SimpleAgent, HelloAgentsLLM, Config, Message, ToolRegistry
 import re
 
 class MySimpleAgent(SimpleAgent):
@@ -15,7 +15,7 @@ class MySimpleAgent(SimpleAgent):
         llm: HelloAgentsLLM,
         system_prompt: Optional[str] = None,
         config: Optional[Config] = None,
-        tool_registry: Optional['ToolRegistry'] = None,
+        tool_registry: Optional[ToolRegistry] = None,
         enable_tool_calling: bool = True
     ):
         super().__init__(name, llm, system_prompt, config)
@@ -227,7 +227,6 @@ class MySimpleAgent(SimpleAgent):
     def add_tool(self, tool) -> None:
         """添加工具到Agent（便利方法）"""
         if not self.tool_registry:
-            from hello_agents import ToolRegistry
             self.tool_registry = ToolRegistry()
             self.enable_tool_calling = True
 
