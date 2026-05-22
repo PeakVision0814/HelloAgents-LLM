@@ -19,7 +19,6 @@ from ..embedding import get_text_embedder, get_dimension
 from ...core.database_config import get_database_config
 
 # 配置日志
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Entity:
