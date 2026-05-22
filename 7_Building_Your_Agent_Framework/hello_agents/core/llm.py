@@ -309,7 +309,7 @@ class HelloAgentsLLM:
             for chunk in response:
                 content = chunk.choices[0].delta.content or ""
                 if content:
-                    print(content, end="", flush=True)
+                    # print(content, end="", flush=True)
                     yield content
             print()  # 在流式输出结束后换行
 
