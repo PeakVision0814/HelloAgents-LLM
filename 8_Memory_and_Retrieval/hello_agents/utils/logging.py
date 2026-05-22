@@ -10,8 +10,8 @@ from typing import Optional
 DEFAULT_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 
 
-def _chapter_root() -> Path:
-    return Path(__file__).resolve().parents[2]
+def _log_root() -> Path:
+    return Path(__file__).resolve().parents[3]
 
 
 def configure_package_logging(
@@ -22,7 +22,7 @@ def configure_package_logging(
 ) -> logging.Logger:
     """为 hello_agents 包配置日志。
 
-    - 文件日志记录 INFO 及以上，默认写入 `8_Memory_and_Retrieval/logs/hello_agents.log`
+    - 文件日志记录 INFO 及以上，默认写入 `agent_study/logs/8_Memory_and_Retrieval.log`
     - 终端只显示 WARNING 及以上，避免大量 INFO 刷屏
     """
     logger = logging.getLogger(logger_name)
@@ -33,7 +33,7 @@ def configure_package_logging(
     logger.setLevel(logging.DEBUG)
     logger.propagate = False
 
-    target_log_file = Path(log_file) if log_file else _chapter_root() / "logs" / "8_Memory_and_Retrieval.log"
+    target_log_file = Path(log_file) if log_file else _log_root() / "logs" / "8_Memory_and_Retrieval.log"
     target_log_file.parent.mkdir(parents=True, exist_ok=True)
 
     formatter = logging.Formatter(DEFAULT_FORMAT)
