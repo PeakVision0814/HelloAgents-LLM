@@ -517,6 +517,59 @@ class QdrantVectorStore:
         info["store_type"] = "qdrant"
         return info
     
+    def get_collection_info_fallback_safe(self) -> Dict[str, Any]:
+        """
+        获取集合信息。
+
+        某些 Qdrant Cloud 响应字段会比本地 qdrant-client 模型更新，
+        这时 get_collection() 在客户端解析阶段就可能失败。这里先尝试
+        完整详情，失败后回退到基础计数，避免影响摘要和统计流程。
+        """
+        info = {
+            "name": self.collection_name,
+            "config": {
+                "vector_size": self.vector_size,
+                "distance": self.distance.value,
+            }
+        }
+
+        try:
+            collection_info = self.client.get_collection(self.collection_name)
+            info.update({
+                "vectors_count": getattr(collection_info, "vectors_count", None),
+                "indexed_vectors_count": getattr(collection_info, "indexed_vectors_count", None),
+                "points_count": getattr(collection_info, "points_count", None),
+                "segments_count": getattr(collection_info, "segments_count", None),
+            })
+            return info
+        except Exception as e:
+            logger.warning(
+                "Qdrant collection detail parsing failed; falling back to basic stats."
+            )
+            logger.debug("Qdrant collection detail error: %s", e)
+
+        try:
+            count_result = self.client.count(
+                collection_name=self.collection_name,
+                exact=True
+            )
+            count_value = getattr(count_result, "count", None)
+            if count_value is not None:
+                info["points_count"] = count_value
+                info["vectors_count"] = count_value
+        except Exception as count_error:
+            logger.warning(f"Qdrant fallback count failed: {count_error}")
+
+        return info
+
+    def get_collection_stats_fallback_safe(self) -> Dict[str, Any]:
+        """
+        获取集合统计信息（兼容抽象接口）。
+        """
+        info = self.get_collection_info_fallback_safe()
+        info["store_type"] = "qdrant"
+        return info
+
     def health_check(self) -> bool:
         """
         健康检查
@@ -539,3 +592,9 @@ class QdrantVectorStore:
                 self.client.close()
             except:
                 pass
+
+
+# Bind compatibility-safe implementations for cloud responses whose schema
+# is newer than the local qdrant-client model definitions.
+QdrantVectorStore.get_collection_info = QdrantVectorStore.get_collection_info_fallback_safe
+QdrantVectorStore.get_collection_stats = QdrantVectorStore.get_collection_stats_fallback_safe
