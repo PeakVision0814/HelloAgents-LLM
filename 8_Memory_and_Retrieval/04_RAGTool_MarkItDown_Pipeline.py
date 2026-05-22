@@ -5,6 +5,7 @@
 展示Any格式→Markdown→分块→向量化的完整流程
 """
 
+from pathlib import Path
 import os
 import time
 import tempfile
@@ -12,12 +13,15 @@ from hello_agents.tools import RAGTool
 from dotenv import load_dotenv
 load_dotenv()
 
+CHAPTER_DIR = Path(__file__).resolve().parent
+DEMO_RAG_DIR = CHAPTER_DIR / "demo_rag_kb"
+
 class MarkItDownPipelineDemo:
     """MarkItDown处理管道演示类"""
     
     def __init__(self):
         self.rag_tool = RAGTool(
-            knowledge_base_path="./demo_rag_kb",
+            knowledge_base_path=str(DEMO_RAG_DIR),
             rag_namespace="markitdown_demo"
         )
         self.temp_dir = tempfile.mkdtemp()
