@@ -21,3 +21,4 @@ huggingface_hub
 qdrant-client==1.7.0
 neo4j>=5.0.0
 spacy
+markitdown
