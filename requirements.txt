@@ -16,3 +16,4 @@ plotly>=5.15.0
 asyncio
 dotenv
 agentscope==1.0.2
+camel-ai==0.2.75
