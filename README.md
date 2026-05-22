@@ -32,6 +32,9 @@ LLM_MODEL_ID=your-model-id
 LLM_API_KEY=your-api-key
 LLM_BASE_URL=https://your-api-endpoint
 LLM_TIMEOUT=60
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_BASE_URL=https://generativelanguage.googleapis.com/v1beta/openai/
+GEMINI_MODEL_ID=gemini-3.5-flash
 SERPAPI_API_KEY=your-serpapi-key
 TAVILY_API_KEY=your-tavily-key
 ```
