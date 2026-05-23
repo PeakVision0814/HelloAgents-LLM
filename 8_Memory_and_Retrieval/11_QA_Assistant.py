@@ -15,10 +15,15 @@ load_dotenv()
 import os
 import time
 import json
+from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
 from hello_agents.tools import MemoryTool, RAGTool
+from hello_agents.memory import MemoryConfig
 import gradio as gr
+
+CHAPTER_DIR = Path(__file__).resolve().parent
+MEMORY_DATA_DIR = CHAPTER_DIR / "memory_data"
 
 class PDFLearningAssistant:
     """智能文档问答助手"""
@@ -32,8 +37,9 @@ class PDFLearningAssistant:
         self.user_id = user_id
         self.session_id = f"session_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-        # 初始化工具
-        self.memory_tool = MemoryTool(user_id=user_id)
+        # 初始化工具（指定 storage_path 到当前脚本所在目录的 memory_data）
+        memory_config = MemoryConfig(storage_path=str(MEMORY_DATA_DIR))
+        self.memory_tool = MemoryTool(user_id=user_id, memory_config=memory_config)
         self.rag_tool = RAGTool(rag_namespace=f"pdf_{user_id}")
 
         # 学习统计
@@ -335,7 +341,7 @@ def create_gradio_ui():
         return result
 
     # 创建Gradio界面
-    with gr.Blocks(title="智能文档问答助手", theme=gr.themes.Soft()) as demo:
+    with gr.Blocks(title="智能文档问答助手") as demo:
         gr.Markdown("""
         # 📚 智能文档问答助手
 
@@ -373,8 +379,7 @@ def create_gradio_ui():
             gr.Markdown("### 向文档提问或回顾学习历程")
             chatbot = gr.Chatbot(
                 label="对话历史",
-                height=400,
-                bubble_full_width=False
+                height=400
             )
             with gr.Row():
                 msg_input = gr.Textbox(
@@ -439,7 +444,8 @@ def main():
         server_name="0.0.0.0",
         server_port=7860,
         share=False,
-        show_error=True
+        show_error=True,
+        theme=gr.themes.Soft()
     )
 
 
