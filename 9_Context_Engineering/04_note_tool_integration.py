@@ -14,6 +14,7 @@ from hello_agents.tools import MemoryTool, RAGTool, NoteTool
 from hello_agents.core.message import Message
 from datetime import datetime
 from typing import List, Dict
+import os
 
 
 class ProjectAssistant(SimpleAgent):
@@ -28,10 +29,11 @@ class ProjectAssistant(SimpleAgent):
 
         self.project_name = project_name
 
-        # 初始化工具
+        # 初始化工具（notes 目录锚定在脚本所在目录）
+        script_dir = os.path.dirname(os.path.abspath(__file__))
         # self.memory_tool = MemoryTool(user_id=project_name)
         # self.rag_tool = RAGTool(knowledge_base_path=f"./{project_name}_kb")
-        self.note_tool = NoteTool(workspace=f"./{project_name}_notes")
+        self.note_tool = NoteTool(workspace=os.path.join(script_dir, f"{project_name}_notes"))
 
         # 初始化上下文构建器
         self.context_builder = ContextBuilder(

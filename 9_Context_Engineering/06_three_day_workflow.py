@@ -32,7 +32,6 @@ import time
 
 # 导入 CodebaseMaintainer
 import sys
-sys.path.append('.')
 from codebase_maintainer import CodebaseMaintainer
 
 
