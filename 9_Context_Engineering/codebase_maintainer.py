@@ -20,6 +20,7 @@ from hello_agents.context import ContextBuilder, ContextConfig, ContextPacket
 from hello_agents.tools import MemoryTool, NoteTool, TerminalTool
 from hello_agents.tools.registry import ToolRegistry
 from hello_agents.core.message import Message
+import os
 
 
 class CodebaseMaintainer:
@@ -52,7 +53,9 @@ class CodebaseMaintainer:
             user_id=project_name,
             memory_types=["working"]
         )
-        self.note_tool = NoteTool(workspace=f"./{project_name}_notes")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        notes_dir = os.path.join(script_dir, f"{project_name}_notes")
+        self.note_tool = NoteTool(workspace=notes_dir)
         self.terminal_tool = TerminalTool(workspace=codebase_path, timeout=60)
 
         # 初始化上下文构建器
