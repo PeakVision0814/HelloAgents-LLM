@@ -3,12 +3,14 @@ import asyncio
 from hello_agents.protocols import MCPClient
 
 async def connect_to_server():
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+
     # 方式1：连接到社区提供的文件系统服务器
     # npx会自动下载并运行@modelcontextprotocol/server-filesystem包
     client = MCPClient([
         "npx", "-y",
         "@modelcontextprotocol/server-filesystem",
-        "."  # 指定根目录
+        script_dir  # 指定根目录为脚本所在目录
     ])
 
     # 使用async with确保连接正确关闭
@@ -18,7 +20,8 @@ async def connect_to_server():
         print(f"可用工具: {[t['name'] for t in tools]}")
 
     # 方式2：连接到自定义的Python MCP服务器
-    client = MCPClient(["python", "my_mcp_server.py"])
+    mcp_server_path = os.path.join(script_dir, "my_mcp_server.py")
+    client = MCPClient(["python", mcp_server_path])
     async with client:
         # 使用client...
         pass
@@ -28,7 +31,8 @@ asyncio.run(connect_to_server())
 
 
 async def discover_tools():
-    client = MCPClient(["npx", "-y", "@modelcontextprotocol/server-filesystem", "."])
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    client = MCPClient(["npx", "-y", "@modelcontextprotocol/server-filesystem", script_dir])
 
     async with client:
         # 获取所有可用工具
@@ -72,7 +76,7 @@ async def use_tools():
 
     async with client:
         # 读取文件
-        result = await client.call_tool("read_file", {"path": "my_README.md"})
+        result = await client.call_tool("read_file", {"path": "10_Agent_Communication_Protocols\\my_README.md"})
         print(f"文件内容：\n{result}")
 
         # 列出目录
