@@ -13,6 +13,7 @@ NoteTool 基本操作示例
 
 from hello_agents.tools import NoteTool
 import re
+import os
 
 
 def extract_note_id(output: str) -> str:
@@ -28,8 +29,10 @@ def main():
     print("NoteTool 基本操作示例")
     print("=" * 80 + "\n")
 
-    # 初始化 NoteTool
-    notes = NoteTool(workspace="./project_notes")
+    # 初始化 NoteTool（指向脚本所在目录的 project_notes 子目录）
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    notes_dir = os.path.join(script_dir, "project_notes")
+    notes = NoteTool(workspace=notes_dir)
 
     # 1. 创建笔记
     print("1. 创建笔记...")
